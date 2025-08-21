@@ -1,8 +1,8 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.ts";
-import formRoutes from "./routes/formRoutes.ts";
+import connectDB from "./config/db";
+import formRoutes from "./routes/formRoutes";
 
 dotenv.config();
 const app = express();
