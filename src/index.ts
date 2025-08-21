@@ -11,10 +11,10 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/forms", formRoutes);
 
-// Use Railway-provided PORT and ensure the app listens on all network interfaces
+// Use Railway-provided PORT and listen on all network interfaces (0.0.0.0)
 const PORT = process.env.PORT || 4000;
 connectDB().then(() => {
-  app.listen(PORT, "0.0.0.0", () =>
-    console.log(`Server running on port ${PORT}`)
-  );
+  app.listen({ port: Number(PORT), host: "0.0.0.0" }, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
