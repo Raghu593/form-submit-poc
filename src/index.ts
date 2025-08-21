@@ -1,8 +1,6 @@
-// src/index.ts
 import express from "express";
-import * as dotenv from "dotenv";
-import cors from "cors";
-import connectDB from "./config/db";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 import formRoutes from "./routes/formRoutes";
 
 dotenv.config();
@@ -10,42 +8,37 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
-
-// Routes
-app.use("/api/forms", formRoutes);
 
 // Health check
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Form Submit API is running!",
+    message: "Welcome to Form Submit API 🚀",
     version: "1.0.0",
     endpoints: {
       "GET /": "Health check",
       "GET /api/forms": "Get all forms",
       "POST /api/forms": "Submit new form",
-      "GET /api/forms/:id": "Get form by ID",
-      "PUT /api/forms/:id": "Update form",
-      "DELETE /api/forms/:id": "Delete form",
     },
   });
 });
 
-// Handle 404 for unmatched routes
-app.use("*", (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: `Route ${req.method} ${req.originalUrl} not found`,
-  });
-});
+// Routes
+app.use("/api/forms", formRoutes);
 
-// Use Railway-provided PORT and listen on all network interfaces (0.0.0.0)
+// Connect to MongoDB & Start server
 const PORT = process.env.PORT || 8080;
+const MONGO_URI = process.env.MONGO_URI as string;
 
-connectDB().then(() => {
-  app.listen(Number(PORT), "0.0.0.0", () => {
-    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err.message);
+    process.exit(1);
   });
-});
